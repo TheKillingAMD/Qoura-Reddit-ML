@@ -37,7 +37,7 @@ def login():
         try:
             user = db_users.find_one({'Email': email})
             correct_pass = user["Password"]
-            if correct_pass == password:
+            if bcrypt.check_password_hash(correct_pass, password):
                 return {'result' : 'Login Successfully'}  
             else:
                 return {'result' : 'Wrong Password'}         
@@ -50,6 +50,7 @@ def register():
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
+        password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         # This is when Front End is made and we can upload pictures
         # profile_picture = request.files['img']
