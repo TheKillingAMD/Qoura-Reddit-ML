@@ -30,36 +30,6 @@ def upload_to_cloudinary(file):
     r = up.upload(file)
     return r['url'].replace('http:', 'https:')
 
-# class User:
-#     def __init__(self, username):
-#         self.username = username
-
-#     @staticmethod
-#     def is_authenticated():
-#         return True
-
-#     @staticmethod
-#     def is_active():
-#         return True
-
-#     @staticmethod
-#     def is_anonymous():
-#         return False
-
-#     def get_id(self):
-#         return self.username
-
-#     @staticmethod
-#     def check_password(password_hash, password):
-#         return check_password_hash(password_hash, password)
-
-
-#     @login.user_loader
-#     def load_user(username):
-#         u = mongo.db.Users.find_one({"Name": username})
-#         if not u:
-#             return None
-#         return User(username=u['Name'])
 
 @app.route("/")
 @app.route("/home")
@@ -70,8 +40,8 @@ def home():
             user_id = question["user_id"]
             user = db_users.find_one({"_id": ObjectId(user_id)})
             questions['question'] = {'Question': question["Question"],
-                                    'User': user["Username"]
-                                    }
+                                     'User': user["Username"]
+                                     }
         return questions
     else:
         return redirect(url_for('login'))
