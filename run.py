@@ -1,6 +1,7 @@
-from flask import Flask, request, session
+from flask import Flask, request, session, redirect, url_for
 from flask_pymongo import PyMongo, ObjectId
-from bson.objectid import ObjectId
+from flask.json import JSONEncoder
+from bson import ObjectId
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 import os
@@ -34,17 +35,18 @@ def upload_to_cloudinary(file):
 @app.route("/")
 @app.route("/home")
 def home():
-    if 'user_id' in session and session['user_id'] is not None:
-        questions = {}
-        for question in db_question.find():
-            user_id = question["user_id"]
-            user = db_users.find_one({"_id": ObjectId(user_id)})
-            questions['question'] = {'Question': question["Question"],
-                                     'User': user["Username"]
-                                     }
-        return questions
-    else:
-        return redirect(url_for('login'))
+    questions = {}
+    for question in db_question.find():
+        user_id = str(question["user_id"])
+        user = db_users.find_one({"_id": ObjectId(user_id)})
+        qid = str(question["_id"])
+        answer = db_answer.find_one({"question_id" : qid})
+        questions['question'] = {'Question_Id': str(question["_id"]),
+                                 'Question': question["Question"],
+                                 'User': user["Username"],
+                                 'Answer': answer["answer"]
+                                }
+    return questions
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -120,6 +122,68 @@ def add_question():
             }
             db_question.insert_one(data)
             return {'result': 'Question Added successfully'}
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/update_question/<qid>', methods=['GET', 'POST'])
+def update_question(qid):
+    if 'user_id' in session and session['user_id'] is not None:
+        if request.method == 'GET':
+            return {'result': 'Question Update Page'}
+        if request.method == 'POST':
+
+            question_id = qid
+            user_id = session['user_id']
+            question = request.form.get("question")
+
+            # This is when Front End is made and we can upload pictures
+            # profile_picture = request.files['img']
+            # if img.filename != '':
+            #     filename = secure_filename(img.filename)
+            #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
+            # else:
+            # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
+
+            db_question.update_one({'_id': ObjectId(str(qid))}, {"$set": {'Question': question}})
+            return {'result': 'Question Updated Succesfully'}
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/add_answer/<qid>', methods=['GET', 'POST'])
+def add_answer(qid):
+    if 'user_id' in session and session['user_id'] is not None:
+        if request.method == 'GET':
+            question = db_question.find_one({"_id": ObjectId(qid)})
+            print(question)
+            quest = {'Question': question["Question"]}
+            return quest
+
+        if request.method == 'POST':
+            question_id = qid
+            user_id = session['user_id']
+            answer = request.form.get('answer')
+
+            # This is when Front End is made and we can upload pictures
+            # profile_picture = request.files['img']
+            # if img.filename != '':
+            #     filename = secure_filename(img.filename)
+            #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
+            # else:
+            # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
+
+            data = {
+                "question_id": question_id,
+                "user_id": user_id,
+                "answer": answer,
+            }
+            db_answer.insert_one(data)
+            return {'result': 'Answer Added successfully'}
+    else:
+        return redirect(url_for('login'))
 
 
 if __name__ == "__main__":
