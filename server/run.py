@@ -40,12 +40,13 @@ def home():
         user_id = str(question["user_id"])
         user = db_users.find_one({"_id": ObjectId(user_id)})
         qid = str(question["_id"])
-        answer = db_answer.find_one({"question_id" : qid})
+        answer = db_answer.find_one({"question_id": qid})
         questions['question'] = {'Question_Id': str(question["_id"]),
                                  'Question': question["Question"],
                                  'User': user["Username"],
-                                 'Answer': answer["answer"]
-                                }
+                                 # TODO: CHECK BELOW LINE
+                                 #  'Answer': answer["answer"]
+                                 }
     return questions
 
 
@@ -146,7 +147,8 @@ def update_question(qid):
             # else:
             # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
 
-            db_question.update_one({'_id': ObjectId(str(qid))}, {"$set": {'Question': question}})
+            db_question.update_one({'_id': ObjectId(str(qid))}, {
+                                   "$set": {'Question': question}})
             return {'result': 'Question Updated Succesfully'}
     else:
         return redirect(url_for('login'))
