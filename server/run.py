@@ -36,17 +36,25 @@ def upload_to_cloudinary(file):
 @app.route("/home")
 def home():
     questions = {}
+    count = 1
     for question in db_question.find():
         user_id = str(question["user_id"])
         user = db_users.find_one({"_id": ObjectId(user_id)})
         qid = str(question["_id"])
         answer = db_answer.find_one({"question_id": qid})
-        questions['question'] = {'Question_Id': str(question["_id"]),
+        if (answer == None):
+            questions[ int(count) ] = {'Question_Id': str(question["_id"]),
                                  'Question': question["Question"],
                                  'User': user["Username"],
-                                 # TODO: CHECK BELOW LINE
-                                 #  'Answer': answer["answer"]
+                                 'Answer': "No Answer Available"
                                  }
+        else:
+            questions[ int(count) ] = {'Question_Id': str(question["_id"]),
+                                    'Question': question["Question"],
+                                    'User': user["Username"],
+                                    'Answer': answer["answer"]
+                                    }
+        count = count + 1
     return questions
 
 
