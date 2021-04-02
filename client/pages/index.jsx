@@ -8,7 +8,7 @@ export default function Home({ data }) {
     return (
         <>
             <Navbar />
-            <Container id='questions'>
+            <Container fluid id='questions' className='px-5 mb-5'>
                 {data.map((q, i) => {
                     return (
                         <div key={i} className='mb-4'>
