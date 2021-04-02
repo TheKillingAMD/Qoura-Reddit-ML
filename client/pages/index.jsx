@@ -20,7 +20,7 @@ export default function Home({ data }) {
                             <p>{q['Question_Id']}</p>
                             <p>{q['Question']}</p>
                             <p>{q['User']}</p>
-                            {/* <p>{q['Answer']}</p> */}
+                            <p>{q['Answer']}</p>
                         </>
                     );
                 })}

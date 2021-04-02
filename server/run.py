@@ -31,13 +31,6 @@ def upload_to_cloudinary(file):
     r = up.upload(file)
     return r['url'].replace('http:', 'https:')
 
-def ml_file_maker(question,answer):
-    f = open("question.txt", 'w')
-    f.write(question)
-    f = open("answer.txt", 'w')
-    f.write(answer)
-    
-
 
 @app.route("/")
 @app.route("/home")
@@ -47,19 +40,19 @@ def home():
         user_id = str(question["user_id"])
         user = db_users.find_one({"_id": ObjectId(user_id)})
         qid = str(question["_id"])
-        # answer = db_answer.find_one({"question_id": qid})
-        # if (answer == None):
-        #     questions.append({'Question_Id': str(question["_id"]),
-        #                       'Question': question["Question"],
-        #                       'User': user["Username"]
-        #                     #   'Answer': "No Answer Available"
-        #                       })
-        # else:
-        questions.append({'Question_Id': str(question["_id"]),
-                          'Question': question["Question"],
-                          'User': user["Username"]
-                          #   'Answer': answer["answer"]
-                          })
+        answer = db_answer.find_one({"question_id": qid})
+        if (answer == None):
+            questions.append({'Question_Id': str(question["_id"]),
+                              'Question': question["Question"],
+                              'User': user["Username"],
+                              'Answer': "No Answer Available"
+                              })
+        else:
+            questions.append({'Question_Id': str(question["_id"]),
+                              'Question': question["Question"],
+                              'User': user["Username"],
+                              'Answer': answer["answer"]
+                              })
     return {'questions': questions}
 
 
@@ -199,37 +192,6 @@ def add_answer(qid):
             return {'result': 'Answer Added successfully'}
     else:
         return redirect(url_for('login'))
-
-@app.route("/question/<qid>")
-def question(qid):
-    answers = list()
-    if db_answer.find({"question_id": qid}) != None:
-        for answer in db_answer.find({"question_id": qid}):
-            question = db_question.find_one({"_id": ObjectId(qid)})
-            question = question["Question"]
-            user_id = answer["user_id"]
-            user = db_users.find_one({"_id": ObjectId(user_id)})
-            user = user["Username"]
-            ans = answer["answer"]
-            ml_file_maker(question,ans)
-            # answer = db_answer.find_one({"question_id": qid})
-            # if (answer == None):
-            #     questions.append({'Question_Id': str(question["_id"]),
-            #                       'Question': question["Question"],
-            #                       'User': user["Username"]
-            #                     #   'Answer': "No Answer Available"
-            #                       })
-            # else:
-            answers.append({'Question': question,
-                            'User': user,
-                            'Answer': ans
-                            #   'Answer': answer["answer"]
-                            })
-        return {'Answers': answers}
-    else:
-        return {'Answer':  "No Answer"}
-
-   
 
 
 if __name__ == "__main__":
