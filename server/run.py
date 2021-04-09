@@ -4,13 +4,18 @@ from flask.json import JSONEncoder
 from bson import ObjectId
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+from flask_cors import CORS
+from functools import wraps
 import os
 import cloudinary
 import cloudinary.uploader as up
 import json
+import jwt
+from datetime import date
 
 
 app = Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY'] = 'e6040f19d063c7ea55a33765df99277c'
 app.config["MONGO_URI"] = "mongodb+srv://Ayush:mongodb@cluster0.0ngc1.mongodb.net/Qoura-ML"
 app.config['UPLOAD_FOLDER'] = 'static/images/'
@@ -31,12 +36,28 @@ def upload_to_cloudinary(file):
     r = up.upload(file)
     return r['url'].replace('http:', 'https:')
 
-def ml_file_maker(question,answer):
+
+def ml_file_maker(question, answer):
     f = open("question.txt", 'w')
     f.write(question)
     f = open("answer.txt", 'w')
     f.write(answer)
-    
+
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+
+        if not token:
+            return redirect(url_for('login'))
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+        except:
+            return redirect(url_for('login'))
+
+        return f(*args, **kwargs)
 
 
 @app.route("/")
@@ -68,14 +89,16 @@ def login():
     if request.method == 'GET':
         return {'result': 'Login Page'}
     if request.method == 'POST':
-        email = request.form.get("email")
-        password = request.form.get("password")
+        email = request.json.get("email")
+        password = request.json.get("password")
         try:
             user = db_users.find_one({'Email': email})
             correct_pass = user["Password"]
             if bcrypt.check_password_hash(correct_pass, password):
-                session['user_id'] = str(user["_id"])
-                return {'result': 'Login Successfully'}
+                token = jwt.encode(
+                    {'user': str(user["_id"])}, app.config['SECRET_KEY'])
+                print(token)
+                return {'result': 'Login Successfully', 'token': token.decode('utf-8')}
             else:
                 return {'result': 'Wrong Password'}
         except:
@@ -87,9 +110,9 @@ def register():
     if request.method == 'GET':
         return {'result': 'Registration Page'}
     if request.method == 'POST':
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
+        username = request.json.get("username")
+        email = request.json.get("email")
+        password = request.json.get("password")
         password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         # This is when Front End is made and we can upload pictures
@@ -112,32 +135,31 @@ def register():
         return {'result': 'Created successfully'}
 
 
+@token_required
 @app.route('/add_question', methods=['GET', 'POST'])
 def add_question():
-    if 'user_id' in session and session['user_id'] is not None:
-        if request.method == 'GET':
-            return {'result': 'Question Adding Page'}
-        if request.method == 'POST':
-            user_id = session['user_id']
-            question = request.form.get("question")
+    if request.method == 'GET':
+        return {'result': 'Question Adding Page'}
+    if request.method == 'POST':
+        question = request.json.get("question")
+        token = request.json.get('token')
+        user_id = jwt.decode(token, app.config['SECRET_KEY'])['user']
 
-            # This is when Front End is made and we can upload pictures
-            # profile_picture = request.files['img']
-            # if img.filename != '':
-            #     filename = secure_filename(img.filename)
-            #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
-            # else:
-            # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
+        # This is when Front End is made and we can upload pictures
+        # profile_picture = request.files['img']
+        # if img.filename != '':
+        #     filename = secure_filename(img.filename)
+        #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+        #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
+        # else:
+        # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
 
-            data = {
-                "user_id": user_id,
-                "Question": question,
-            }
-            db_question.insert_one(data)
-            return {'result': 'Question Added successfully'}
-    else:
-        return redirect(url_for('login'))
+        data = {
+            "user_id": user_id,
+            "Question": question,
+        }
+        db_question.insert_one(data)
+        return {'result': 'Question Added successfully'}
 
 
 @app.route('/update_question/<qid>', methods=['GET', 'POST'])
@@ -200,6 +222,7 @@ def add_answer(qid):
     else:
         return redirect(url_for('login'))
 
+
 @app.route("/question/<qid>")
 def question(qid):
     answers = list()
@@ -211,7 +234,7 @@ def question(qid):
             user = db_users.find_one({"_id": ObjectId(user_id)})
             user = user["Username"]
             ans = answer["answer"]
-            ml_file_maker(question,ans)
+            ml_file_maker(question, ans)
             # answer = db_answer.find_one({"question_id": qid})
             # if (answer == None):
             #     questions.append({'Question_Id': str(question["_id"]),
@@ -228,8 +251,6 @@ def question(qid):
         return {'Answers': answers}
     else:
         return {'Answer':  "No Answer"}
-
-   
 
 
 if __name__ == "__main__":

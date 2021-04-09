@@ -5,8 +5,8 @@ import { Button, Container, Form } from 'react-bootstrap';
 import Navbar from '../components/Navbar';
 
 export default function Home() {
-    const [values, setValues] = useState({ email: '', password: '' });
-    const [loggingIn, setLoggingIn] = useState(false);
+    const [values, setValues] = useState({ question: '' });
+    const [adding, setAdding] = useState(false);
 
     const changeForm = e => {
         setValues({ ...values, [e.target.id]: e.target.value });
@@ -15,17 +15,16 @@ export default function Home() {
     const submitForm = async e => {
         e.preventDefault();
         console.log(values);
-        setLoggingIn(true);
+        setAdding(true);
         await axios
-            .post('http://localhost:5000/login', values)
+            .post('http://localhost:5000/add_question', values)
             .then(response => {
                 console.log(response.data);
-                //eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiNjA2NzZlMDU3YjgwODllNjg3NWJmZjRjIn0.-tvQAVHaKtl783KIpiU3DrppgCmy0SnUTNdCYpSFWZM
                 const { result, token } = response.data;
-                console.log(token);
-                if (result === 'Login Successfully') {
+                console.log(token)
+                if (result === 'Created successfully') {
                 }
-                setLoggingIn(false);
+                setAdding(false);
             })
             .catch(error => {
                 console.log(error);
@@ -38,24 +37,16 @@ export default function Home() {
             <Navbar />
             <Container fluid id='questions' className='px-5 mb-5'>
                 <Form onSubmit={submitForm} method='POST'>
-                    <Form.Group controlId='email'>
-                        <Form.Label>Email address</Form.Label>
+                    <Form.Group controlId='question'>
+                        <Form.Label>Question</Form.Label>
                         <Form.Control
-                            type='email'
-                            placeholder='Enter email'
-                            onChange={changeForm}
-                        />
-                    </Form.Group>
-                    <Form.Group controlId='password'>
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type='password'
-                            placeholder='Password'
+                            type='text'
+                            placeholder='Enter question'
                             onChange={changeForm}
                         />
                     </Form.Group>
                     <Button variant='primary' type='submit'>
-                        {loggingIn ? <span>LOGGING IN</span> : 'Submit'}
+                        {adding ? <span>ADDING</span> : 'Submit'}
                     </Button>
                 </Form>
             </Container>
