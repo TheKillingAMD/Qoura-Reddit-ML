@@ -11,19 +11,25 @@ import cloudinary
 import cloudinary.uploader as up
 import json
 import jwt
-from datetime import date
+from datetime import date, timedelta, datetime
+from flask_jwt_extended import JWTManager
+from flask_jwt_extended import (
+    create_refresh_token, create_access_token, jwt_required, get_jwt_identity, get_jwt)
 
 
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'e6040f19d063c7ea55a33765df99277c'
 app.config["MONGO_URI"] = "mongodb+srv://Ayush:mongodb@cluster0.0ngc1.mongodb.net/Qoura-ML"
+app.config['JWT_ALGORITHM'] = 'HS512'
 app.config['UPLOAD_FOLDER'] = 'static/images/'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'info'
+test_jwt = JWTManager(app)
+app.json_encoder = JSONEncoder
+# login_manager = LoginManager(app)
+# login_manager.login_view = 'login'
+# login_manager.login_message_category = 'info'
 db_users = mongo.db.User
 db_question = mongo.db.Question
 db_answer = mongo.db.Answers
@@ -95,10 +101,12 @@ def login():
             user = db_users.find_one({'Email': email})
             correct_pass = user["Password"]
             if bcrypt.check_password_hash(correct_pass, password):
-                token = jwt.encode(
-                    {'user': str(user["_id"])}, app.config['SECRET_KEY'])
-                print(token)
-                return {'result': 'Login Successfully', 'token': token.decode('utf-8')}
+                userId = str(user['_id'])
+                accessToken = create_access_token(
+                    identity=email, expires_delta=None, additional_claims={'user': userId})
+                print({'result': 'Login Successfully',
+                      'accessToken': accessToken, "email": email})
+                return {'result': 'Login Successfully', "accessToken": accessToken, "email": email}
             else:
                 return {'result': 'Wrong Password'}
         except:
@@ -131,19 +139,21 @@ def register():
             "Profile Picture": img_url,
             "Authenticity": 0
         }
-        db_users.insert_one(data)
-        return {'result': 'Created successfully'}
+        result = db_users.insert_one(data)
+        accessToken = create_access_token(
+            identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
+        return {'result': 'Created successfully', "accessToken": accessToken, "email": email}
 
 
 @token_required
 @app.route('/add_question', methods=['GET', 'POST'])
+@jwt_required()
 def add_question():
     if request.method == 'GET':
         return {'result': 'Question Adding Page'}
     if request.method == 'POST':
         question = request.json.get("question")
-        token = request.json.get('token')
-        user_id = jwt.decode(token, app.config['SECRET_KEY'])['user']
+        user_id = get_jwt()['user']
 
         # This is when Front End is made and we can upload pictures
         # profile_picture = request.files['img']
