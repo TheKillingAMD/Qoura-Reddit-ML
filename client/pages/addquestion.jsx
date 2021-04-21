@@ -3,10 +3,16 @@ import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 
 import Navbar from '../components/Navbar';
+import { useSession } from 'next-auth/client';
 
 export default function Home() {
+    const [session] = useSession();
     const [values, setValues] = useState({ question: '' });
     const [adding, setAdding] = useState(false);
+
+    if (session) {
+        console.log('AT:', session);
+    }
 
     const changeForm = e => {
         setValues({ ...values, [e.target.id]: e.target.value });
@@ -16,13 +22,19 @@ export default function Home() {
         e.preventDefault();
         console.log(values);
         setAdding(true);
+        const headers = {
+            headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+            },
+        };
+        console.log(values, headers);
         await axios
-            .post('http://localhost:5000/add_question', values)
+            .post('http://localhost:5000/add_question', values, headers)
             .then(response => {
                 console.log(response.data);
-                const { result, token } = response.data;
-                console.log(token)
+                const { result } = response.data;
                 if (result === 'Created successfully') {
+                    console.log(response.data);
                 }
                 setAdding(false);
             })

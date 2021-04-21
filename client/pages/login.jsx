@@ -3,10 +3,16 @@ import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 
 import Navbar from '../components/Navbar';
+import { signIn, useSession } from 'next-auth/client';
 
 export default function Home() {
+    const [session] = useSession();
     const [values, setValues] = useState({ email: '', password: '' });
     const [loggingIn, setLoggingIn] = useState(false);
+
+    if (session) {
+        console.log('AT:', session);
+    }
 
     const changeForm = e => {
         setValues({ ...values, [e.target.id]: e.target.value });
@@ -16,20 +22,10 @@ export default function Home() {
         e.preventDefault();
         console.log(values);
         setLoggingIn(true);
-        await axios
-            .post('http://localhost:5000/login', values)
-            .then(response => {
-                console.log(response.data);
-                //eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiNjA2NzZlMDU3YjgwODllNjg3NWJmZjRjIn0.-tvQAVHaKtl783KIpiU3DrppgCmy0SnUTNdCYpSFWZM
-                const { result, token } = response.data;
-                console.log(token);
-                if (result === 'Login Successfully') {
-                }
-                setLoggingIn(false);
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        signIn('credentials', {
+            email: values.email,
+            password: values.password,
+        });
         return 'SUCCESS';
     };
 
