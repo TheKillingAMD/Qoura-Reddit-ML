@@ -15,7 +15,7 @@ from datetime import date, timedelta, datetime
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (
     create_refresh_token, create_access_token, jwt_required, get_jwt_identity, get_jwt)
-import final
+from final import get_result
 
 
 app = Flask(__name__)
@@ -200,43 +200,50 @@ def update_question(qid):
         return redirect(url_for('login'))
 
 
+# @token_required
 @app.route('/add_answer/<qid>', methods=['GET', 'POST'])
+@jwt_required()
 def add_answer(qid):
-    if 'user_id' in session and session['user_id'] is not None:
-        if request.method == 'GET':
-            question = db_question.find_one({"_id": ObjectId(qid)})
-            print(question)
-            quest = {'Question': question["Question"]}
-            return quest
+    # if 'user_id' in session and session['user_id'] is not None:
+    if request.method == 'GET':
+        question = db_question.find_one({"_id": ObjectId(qid)})
+        print(question)
+        quest = {'Question': question["Question"]}
+        return quest
 
-        if request.method == 'POST':
-            question_id = qid
-            user_id = session['user_id']
-            answer = request.form.get('answer')
+    if request.method == 'POST':
+        question_id = qid
+        user_id = get_jwt()['user']
+        answer = request.form.get('answer')
 
-            # This is when Front End is made and we can upload pictures
-            # profile_picture = request.files['img']
-            # if img.filename != '':
-            #     filename = secure_filename(img.filename)
-            #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
-            # else:
-            # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
+        # This is when Front End is made and we can upload pictures
+        # profile_picture = request.files['img']
+        # if img.filename != '':
+        #     filename = secure_filename(img.filename)
+        #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+        #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
+        # else:
+        # img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
 
-            data = {
-                "question_id": question_id,
-                "user_id": user_id,
-                "answer": answer,
-            }
-            db_answer.insert_one(data)
-            return {'result': 'Answer Added successfully'}
-    else:
-        return redirect(url_for('login'))
+        data = {
+            "question_id": question_id,
+            "user_id": user_id,
+            "answer": answer,
+        }
+        db_answer.insert_one(data)
+        return {'result': 'Answer Added successfully'}
+# else:
+#     return redirect(url_for('login'))
 
 
 @app.route("/question/<qid>")
 def question(qid):
     answers = list()
+    # questions = []
+    users = []
+    answers = []
+    ans_ml = []
+    scores = []
     if db_answer.find({"question_id": qid}) != None:
         for answer in db_answer.find({"question_id": qid}):
             question = db_question.find_one({"_id": ObjectId(qid)})
@@ -245,7 +252,6 @@ def question(qid):
             user = db_users.find_one({"_id": ObjectId(user_id)})
             user = user["Username"]
             ans = answer["answer"]
-            ml_file_maker(question, ans)
             # answer = db_answer.find_one({"question_id": qid})
             # if (answer == None):
             #     questions.append({'Question_Id': str(question["_id"]),
@@ -254,13 +260,17 @@ def question(qid):
             #                     #   'Answer': "No Answer Available"
             #                       })
             # else:
-            answers.append({'Question': question,
-                            'User': user,
-                            'Answer': ans
-                            #   'Answer': answer["answer"]
-                            })
-        return {'Answers': answers}
+            # questions.append(question)
+            users.append(user)
+            ans_ml.append(ans)
+        value = get_result(question,ans_ml)
+        for score in value:
+            scores.append(str(score[0]))
+        final = list(sorted(zip(scores,users,ans_ml)))
+        print(final)
 
+        # print(list(zipped))
+        return {'Answer': final}
     else:
         return {'Answer':  "No Answer"}
 

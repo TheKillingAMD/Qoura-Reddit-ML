@@ -99,13 +99,13 @@ def get_result(Q, A):
         
     return result
 
-Q = 'What is my name?'
+# Q = 'What is my name?'
 
-A = ['My name is Ayush','Byush','Mango']
+# A = ['My name is Ayush','Byush','Mango']
 
-result = get_result(Q, A)
+# result = get_result(Q, A)
 
-for i in result:
-    print(i[0], end = ' ')
+# for i in result:
+#     print(i[0], end = ' ')
 
 # print()
