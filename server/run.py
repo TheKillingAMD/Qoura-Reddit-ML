@@ -216,6 +216,9 @@ def add_answer(qid):
         user_id = get_jwt()['user']
         answer = request.form.get('answer')
 
+        if db_answer.find_one({'user_id' : user_id, 'question_id' : qid}) != None:
+            return { 'Error' : 'User Already Added Answer'}
+
         # This is when Front End is made and we can upload pictures
         # profile_picture = request.files['img']
         # if img.filename != '':
@@ -239,7 +242,7 @@ def add_answer(qid):
 @app.route("/question/<qid>")
 def question(qid):
     answers = list()
-    # questions = []
+    questions = ""
     users = []
     answers = []
     ans_ml = []
@@ -270,7 +273,7 @@ def question(qid):
         print(final)
 
         # print(list(zipped))
-        return {'Answer': final}
+        return {'Question' : question,'Answer': final}
     else:
         return {'Answer':  "No Answer"}
 
