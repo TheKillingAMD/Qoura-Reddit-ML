@@ -1,19 +1,28 @@
 import axios from 'axios';
-import { Container } from 'react-bootstrap';
+import { Container, Table } from 'react-bootstrap';
 
 import Navbar from '../../components/Navbar';
+import Avatar from '../../components/Avatar';
 
 export default function Question({ data }) {
     return (
         <>
             <Navbar />
-            <Container fluid className='px-5'>
-                {data.map((v, i) => (
-                    <div key={i}>
-                        <p>{v['Answer']}</p>
-                        <p>{v['User']}</p>
-                    </div>
-                ))}
+            <Container className='px-5'>
+                <h2>{data['Question'][0]}</h2>
+                <h5 className='mb-5 text-muted'>Asked By: {data['Question'][1]}</h5>
+                <Table>
+                    <tbody>
+                        {data['Answer'].map((v, i) => (
+                            <tr key={i} className='mb-3'>
+                                <td>
+                                    <Avatar text={v[1]} />
+                                </td>
+                                <td className="align-middle">{v[2]}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
             </Container>
         </>
     );
@@ -21,9 +30,12 @@ export default function Question({ data }) {
 
 export async function getServerSideProps({ params }) {
     const id = params.id;
-    const { Answers: data } = await axios
+    const data = await axios
         .get('http://127.0.0.1:5000/question/' + id)
         .then(function (response) {
+            let ans = response.data.Answer;
+            console.log(ans.sort((a1, a2) => parseFloat(a2[0]) - parseFloat(a1[0])));
+            // console.log(response.data.Answer);
             return response.data;
         })
         .catch(function (error) {
