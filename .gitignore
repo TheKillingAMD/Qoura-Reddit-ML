@@ -4,3 +4,4 @@ node_modules/
 .vscode/
 
 server/static/
+server/__pycache__
