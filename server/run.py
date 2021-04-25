@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_cors import CORS
 from functools import wraps
+from werkzeug.utils import secure_filename
 import os
 import cloudinary
 import cloudinary.uploader as up
@@ -131,8 +132,8 @@ def register():
         image = request.files['image']
         if image.filename != '':
             filename = secure_filename(image.filename)
-            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            img_url = upload_to_cloudinary(app.config['UPLOAD_FOLDER']+filename)
         else:
             img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
         authenticity = 0
