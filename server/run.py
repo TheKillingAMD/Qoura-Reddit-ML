@@ -128,13 +128,13 @@ def register():
         print(request.files)
 
         # This is when Front End is made and we can upload pictures
-        # profile_picture = request.files['img']
-        # if img.filename != '':
-        #     filename = secure_filename(img.filename)
-        #     img.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-        #     img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
-        # else:
-        img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
+        image = request.files['image']
+        if image.filename != '':
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            img_url = upload_to_cloudinary(current_app.config['UPLOAD_FOLDER']+filename)
+        else:
+            img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
         authenticity = 0
         # data = {
         #     "Username": username,
