@@ -108,7 +108,7 @@ def login():
                 accessToken = create_access_token(
                     identity=email, expires_delta=None, additional_claims={'user': userId})
                 print({'result': 'Login Successfully',
-                      'accessToken': accessToken, "email": email})
+                       'accessToken': accessToken, "email": email})
                 return {'result': 'Login Successfully', "accessToken": accessToken, "email": email}
             else:
                 return {'result': 'Wrong Password'}
@@ -218,8 +218,8 @@ def add_answer(qid):
         user_id = get_jwt()['user']
         answer = request.form.get('answer')
 
-        if db_answer.find_one({'user_id' : user_id, 'question_id' : qid}) != None:
-            return { 'Error' : 'User Already Added Answer'}
+        if db_answer.find_one({'user_id': user_id, 'question_id': qid}) != None:
+            return {'Error': 'User Already Added Answer'}
 
         # This is when Front End is made and we can upload pictures
         # profile_picture = request.files['img']
@@ -252,7 +252,8 @@ def question(qid):
     if db_answer.find({"question_id": qid}) != None:
         for answer in db_answer.find({"question_id": qid}):
             question = db_question.find_one({"_id": ObjectId(qid)})
-            question = question["Question"]
+            q_user = db_users.find_one({"_id": ObjectId(question['user_id'])})
+            question = [question["Question"], q_user['Username']]
             user_id = answer["user_id"]
             user = db_users.find_one({"_id": ObjectId(user_id)})
             user = user["Username"]
@@ -268,14 +269,14 @@ def question(qid):
             # questions.append(question)
             users.append(user)
             ans_ml.append(ans)
-        value = get_result(question,ans_ml)
+        value = get_result(question[0], ans_ml)
         for score in value:
             scores.append(str(score[0]))
-        final = list(sorted(zip(scores,users,ans_ml)))
+        final = list(sorted(zip(scores, users, ans_ml)))
         print(final)
 
         # print(list(zipped))
-        return {'Question' : question,'Answer': final}
+        return {'Question': question, 'Answer': final}
     else:
         return {'Answer':  "No Answer"}
 
