@@ -121,10 +121,11 @@ def register():
     if request.method == 'GET':
         return {'result': 'Registration Page'}
     if request.method == 'POST':
-        username = request.json.get("username")
-        email = request.json.get("email")
-        password = request.json.get("password")
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
         password = bcrypt.generate_password_hash(password).decode('utf-8')
+        print(request.files)
 
         # This is when Front End is made and we can upload pictures
         # profile_picture = request.files['img']
@@ -135,16 +136,18 @@ def register():
         # else:
         img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
         authenticity = 0
-        data = {
-            "Username": username,
-            "Email": email,
-            "Password": password,
-            "Profile Picture": img_url,
-            "Authenticity": 0
-        }
-        result = db_users.insert_one(data)
-        accessToken = create_access_token(
-            identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
+        # data = {
+        #     "Username": username,
+        #     "Email": email,
+        #     "Password": password,
+        #     "Profile Picture": img_url,
+        #     "Authenticity": 0
+        # }
+        # result = db_users.insert_one(data)
+        accessToken = "test"
+        email = "test"
+        # accessToken = create_access_token(
+        # identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
         return {'result': 'Created successfully', "accessToken": accessToken, "email": email}
 
 
