@@ -7,6 +7,7 @@ from flask_login import LoginManager, login_user, current_user, logout_user, log
 from flask_cors import CORS
 from functools import wraps
 from werkzeug.utils import secure_filename
+from PIL import Image
 import os
 import cloudinary
 import cloudinary.uploader as up
@@ -133,22 +134,25 @@ def register():
         if image.filename != '':
             filename = secure_filename(image.filename)
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            foo = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            foo = foo.resize((100,100),Image.ANTIALIAS)
+            foo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename),quality=95)
             img_url = upload_to_cloudinary(app.config['UPLOAD_FOLDER']+filename)
         else:
             img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
         authenticity = 0
-        # data = {
-        #     "Username": username,
-        #     "Email": email,
-        #     "Password": password,
-        #     "Profile Picture": img_url,
-        #     "Authenticity": 0
-        # }
-        # result = db_users.insert_one(data)
+        data = {
+            "Username": username,
+            "Email": email,
+            "Password": password,
+            "Profile Picture": img_url,
+            "Authenticity": 0
+        }
+        result = db_users.insert_one(data)
         accessToken = "test"
         email = "test"
-        # accessToken = create_access_token(
-        # identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
+        accessToken = create_access_token(
+        identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
         return {'result': 'Created successfully', "accessToken": accessToken, "email": email}
 
 
