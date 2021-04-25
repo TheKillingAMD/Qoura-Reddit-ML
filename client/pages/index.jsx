@@ -1,13 +1,17 @@
 import axios from 'axios';
 import { Container } from 'react-bootstrap';
+import { useSession } from 'next-auth/client';
 
 import Navbar from '../components/Navbar';
 import QBox from '../components/QBox';
 
 export default function Home({ data }) {
+    const [session] = useSession();
+    console.log(session);
+    console.log(session?.avatarURL);
     return (
         <>
-            <Navbar />
+            <Navbar avatar={session ? session.avatarURL : null} />
             <Container fluid id='questions' className='px-5 mb-5'>
                 {data.map((q, i) => {
                     return (

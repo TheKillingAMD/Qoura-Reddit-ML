@@ -1,13 +1,18 @@
 import axios from 'axios';
 import { Container, Table } from 'react-bootstrap';
+import { useSession } from 'next-auth/client';
 
 import Navbar from '../../components/Navbar';
 import Avatar from '../../components/Avatar';
 
 export default function Question({ data }) {
+    const [session] = useSession();
+    console.log(session);
+    console.log(session?.avatarURL);
+
     return (
         <>
-            <Navbar />
+            <Navbar avatar={session ? session.avatarURL : null} />
             <Container className='px-5'>
                 <h2>{data['Question'][0]}</h2>
                 <h5 className='mb-5 text-muted'>Asked By: {data['Question'][1]}</h5>
@@ -18,7 +23,7 @@ export default function Question({ data }) {
                                 <td>
                                     <Avatar text={v[1]} />
                                 </td>
-                                <td className="align-middle">{v[2]}</td>
+                                <td className='align-middle'>{v[2]}</td>
                             </tr>
                         ))}
                     </tbody>

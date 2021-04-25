@@ -21,6 +21,7 @@ const callbacks = {
         if (user) {
             token.accessToken = user.accessToken;
             token.email = user.email;
+            token.avatarURL = user.avatarURL;
         }
 
         return token;
@@ -28,6 +29,7 @@ const callbacks = {
 
     async session(session, token) {
         session.accessToken = token.accessToken;
+        session.avatarURL = token.avatarURL;
         session.user = token.email;
         return session;
     }

@@ -111,7 +111,7 @@ def login():
                     identity=email, expires_delta=None, additional_claims={'user': userId})
                 print({'result': 'Login Successfully',
                        'accessToken': accessToken, "email": email})
-                return {'result': 'Login Successfully', "accessToken": accessToken, "email": email}
+                return {'result': 'Login Successfully', "accessToken": accessToken, "email": email, "avatarURL": user["Profile Picture"]}
             else:
                 return {'result': 'Wrong Password'}
         except:
@@ -134,13 +134,17 @@ def register():
         if image.filename != '':
             filename = secure_filename(image.filename)
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            foo = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            foo = foo.resize((100,100),Image.ANTIALIAS)
-            foo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename),quality=95)
-            img_url = upload_to_cloudinary(app.config['UPLOAD_FOLDER']+filename)
+            foo = Image.open(os.path.join(
+                app.config['UPLOAD_FOLDER'], filename))
+            foo = foo.resize((100, 100), Image.ANTIALIAS)
+            foo.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], filename), quality=95)
+            img_url = upload_to_cloudinary(
+                app.config['UPLOAD_FOLDER']+filename)
         else:
             img_url = 'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg'
         authenticity = 0
+        print(img_url)
         data = {
             "Username": username,
             "Email": email,
@@ -149,11 +153,9 @@ def register():
             "Authenticity": 0
         }
         result = db_users.insert_one(data)
-        accessToken = "test"
-        email = "test"
         accessToken = create_access_token(
-        identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
-        return {'result': 'Created successfully', "accessToken": accessToken, "email": email}
+            identity=email, expires_delta=None, additional_claims={'user': str(email)})
+        return {'result': 'Created successfully', "accessToken": accessToken, "email": email, "avatarURL": img_url}
 
 
 @token_required

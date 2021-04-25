@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
+import { useSession } from 'next-auth/client';
 
 import Navbar from '../components/Navbar';
-import { useSession } from 'next-auth/client';
 
 export default function Home() {
     const [session] = useSession();
@@ -46,7 +46,7 @@ export default function Home() {
 
     return (
         <>
-            <Navbar />
+            <Navbar avatar={session ? session.avatarURL : null} />
             <Container fluid id='questions' className='px-5 mb-5'>
                 <Form onSubmit={submitForm} method='POST'>
                     <Form.Group controlId='question'>
