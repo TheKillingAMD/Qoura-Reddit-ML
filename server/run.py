@@ -16,6 +16,7 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (
     create_refresh_token, create_access_token, jwt_required, get_jwt_identity, get_jwt)
 from final import get_result
+import random
 
 
 app = Flask(__name__)
@@ -88,6 +89,7 @@ def home():
                           'User': user["Username"]
                           #   'Answer': answer["answer"]
                           })
+    random.shuffle(questions)
     return {'questions': questions}
 
 
