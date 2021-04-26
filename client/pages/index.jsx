@@ -11,7 +11,7 @@ export default function Home({ data }) {
     // console.log(session?.avatarURL);
     return (
         <>
-            <Navbar session={session} avatar={session ? session.avatarURL : null} />
+            <Navbar session={session} />
             <Container fluid id='questions' className='px-5 mb-5'>
                 {data.map((q, i) => {
                     return (

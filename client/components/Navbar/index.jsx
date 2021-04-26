@@ -5,7 +5,7 @@ import Avatar from '../Avatar';
 
 import styles from './Navbar.module.scss';
 
-export default function Navbar({ avatar, session }) {
+export default function Navbar({ session }) {
     if (session) {
         console.log('AT:', session);
     }
@@ -24,7 +24,18 @@ export default function Navbar({ avatar, session }) {
                         <Nav.Link className={styles.nav_link} onClick={() => signOut()}>
                             LOG OUT
                         </Nav.Link>
-                        {avatar && <Image className="mx-2" src={avatar} roundedCircle width='40px' height='40px' />}
+                        {session.avatarURL ===
+                        'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg' ? (
+                            <Avatar text={session.user} />
+                        ) : (
+                            <Image
+                                className='mx-2'
+                                src={session.avatarURL}
+                                roundedCircle
+                                width='40px'
+                                height='40px'
+                            />
+                        )}
                     </>
                 ) : (
                     <>

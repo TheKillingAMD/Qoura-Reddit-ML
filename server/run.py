@@ -54,22 +54,6 @@ def ml_file_maker(question, answer):
     f.write(answer)
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.args.get('token')
-
-        if not token:
-            return redirect(url_for('login'))
-
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
-        except:
-            return redirect(url_for('login'))
-
-        return f(*args, **kwargs)
-
-
 @app.route("/")
 @app.route("/home")
 def home():
@@ -111,7 +95,7 @@ def login():
                     identity=email, expires_delta=None, additional_claims={'user': userId})
                 print({'result': 'Login Successfully',
                        'accessToken': accessToken, "email": email})
-                return {'result': 'Login Successfully', "accessToken": accessToken, "email": email, "avatarURL": user["Profile Picture"]}
+                return {'result': 'Login Successfully', "accessToken": accessToken, "email": email, "avatarURL": user["Profile Picture"], "name": user['Username']}
             else:
                 return {'result': 'Wrong Password'}
         except:
@@ -154,11 +138,10 @@ def register():
         }
         result = db_users.insert_one(data)
         accessToken = create_access_token(
-            identity=email, expires_delta=None, additional_claims={'user': str(email)})
-        return {'result': 'Created successfully', "accessToken": accessToken, "email": email, "avatarURL": img_url}
+            identity=email, expires_delta=None, additional_claims={'user': str(result.inserted_id)})
+        return {'result': 'Created successfully', "accessToken": accessToken, "email": email, "avatarURL": img_url, "name": username}
 
 
-@token_required
 @app.route('/add_question', methods=['GET', 'POST'])
 @jwt_required()
 def add_question():

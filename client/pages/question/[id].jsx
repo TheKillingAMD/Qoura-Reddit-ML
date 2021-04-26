@@ -12,7 +12,7 @@ export default function Question({ data }) {
 
     return (
         <>
-            <Navbar session={session} avatar={session ? session.avatarURL : null} />
+            <Navbar session={session} />
             <Container className='px-5'>
                 <h2>{data['Question'][0]}</h2>
                 <h5 className='mb-5 text-muted'>Asked By: {data['Question'][1]}</h5>
@@ -21,8 +21,17 @@ export default function Question({ data }) {
                         {data['Answer'].map((v, i) => (
                             <tr key={i} className='mb-3'>
                                 <td>
-                                    {/* <Avatar text={v[1][0]} /> */}
-                                    <Image className="mx-2" src={v[1][1]} roundedCircle width='40px' height='40px' />
+                                    {v[1][1] ===
+                                    'https://res.cloudinary.com/thekillingamd/image/upload/v1612692376/Profile%20Pictures/hide-facebook-profile-picture-notification_q15wp8.jpg' ? (
+                                        <Avatar text={v[1][0]} />
+                                    ) : (
+                                        <Image
+                                            src={v[1][1]}
+                                            roundedCircle
+                                            width='40px'
+                                            height='40px'
+                                        />
+                                    )}
                                 </td>
                                 <td className='align-middle'>
                                     <div>

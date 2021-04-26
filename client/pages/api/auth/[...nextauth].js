@@ -21,6 +21,7 @@ const callbacks = {
         if (user) {
             token.accessToken = user.accessToken;
             token.email = user.email;
+            token.name = user.name;
             token.avatarURL = user.avatarURL;
         }
 
@@ -30,7 +31,8 @@ const callbacks = {
     async session(session, token) {
         session.accessToken = token.accessToken;
         session.avatarURL = token.avatarURL;
-        session.user = token.email;
+        session.user = token.name;
+        session.email = token.email;
         return session;
     }
 };
@@ -38,7 +40,7 @@ const callbacks = {
 const options = {
     providers,
     callbacks,
-    
+
 };
 
 export default (req, res) => NextAuth(req, res, options);
