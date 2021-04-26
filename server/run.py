@@ -114,8 +114,8 @@ def register():
         print(request.files)
 
         # This is when Front End is made and we can upload pictures
-        image = request.files['image']
-        if image.filename != '':
+        if request.files and request.files['image'].filename != '':
+            image = request.files['image']
             filename = secure_filename(image.filename)
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             foo = Image.open(os.path.join(
