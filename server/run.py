@@ -243,10 +243,10 @@ def question(qid):
     ans_ml = []
     scores = []
     if db_answer.find({"question_id": qid}) != None:
+        question = db_question.find_one({"_id": ObjectId(qid)})
+        q_user = db_users.find_one({"_id": ObjectId(question['user_id'])})
+        question = [question["Question"], q_user['Username']]
         for answer in db_answer.find({"question_id": qid}):
-            question = db_question.find_one({"_id": ObjectId(qid)})
-            q_user = db_users.find_one({"_id": ObjectId(question['user_id'])})
-            question = [question["Question"], q_user['Username']]
             user_id = answer["user_id"]
             user = db_users.find_one({"_id": ObjectId(user_id)})
             userAvatarURL = user["Profile Picture"]
