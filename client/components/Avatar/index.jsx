@@ -30,7 +30,7 @@ export default function Avatar({ text }) {
                     y='50%'
                     fill='white'
                     fontSize='30'
-                    text-anchor='middle'
+                    textAnchor='middle'
                     dy='.3em'
                     fontWeight='600'
                 >

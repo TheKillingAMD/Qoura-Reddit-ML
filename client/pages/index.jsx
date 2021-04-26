@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../utils/axios';
 import { Container } from 'react-bootstrap';
 import { useSession } from 'next-auth/client';
 
@@ -27,7 +27,7 @@ export default function Home({ data }) {
 
 export async function getServerSideProps() {
     const { questions: data } = await axios
-        .get('http://127.0.0.1:5000')
+        .get('/papi')
         .then(function (response) {
             return response.data;
         })

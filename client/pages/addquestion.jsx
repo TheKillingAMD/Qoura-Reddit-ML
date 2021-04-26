@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../utils/axios';
 import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { useSession } from 'next-auth/client';
@@ -29,14 +29,15 @@ export default function Home() {
         };
         console.log(values, headers);
         await axios
-            .post('http://localhost:5000/add_question', values, headers)
+            .post('/papi/add_question', values, headers)
             .then(response => {
                 console.log(response.data);
                 const { result } = response.data;
-                if (result === 'Created successfully') {
+                if (result === 'Question Added successfully') {
                     console.log(response.data);
+                    window.location = "/"
+                    setAdding(false);
                 }
-                setAdding(false);
             })
             .catch(error => {
                 console.log(error);
