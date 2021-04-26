@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
+import { signIn } from 'next-auth/client';
 
 import Navbar from '../components/Navbar';
 
@@ -37,6 +38,11 @@ export default function Home() {
                 console.log(response.data);
                 const { result } = response.data;
                 if (result === 'Created successfully') {
+                    signIn('credentials', {
+                        email: values.email,
+                        password: values.password,
+                        callbackUrl: 'localhost:3000',
+                    });
                 }
                 setRegister(false);
             })
