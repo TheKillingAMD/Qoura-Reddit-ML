@@ -7,11 +7,11 @@ import QBox from '../components/QBox';
 
 export default function Home({ data }) {
     const [session] = useSession();
-    console.log(session);
-    console.log(session?.avatarURL);
+    // console.log(session);
+    // console.log(session?.avatarURL);
     return (
         <>
-            <Navbar avatar={session ? session.avatarURL : null} />
+            <Navbar session={session} avatar={session ? session.avatarURL : null} />
             <Container fluid id='questions' className='px-5 mb-5'>
                 {data.map((q, i) => {
                     return (

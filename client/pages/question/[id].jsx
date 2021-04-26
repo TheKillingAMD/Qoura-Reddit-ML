@@ -12,7 +12,7 @@ export default function Question({ data }) {
 
     return (
         <>
-            <Navbar avatar={session ? session.avatarURL : null} />
+            <Navbar session={session} avatar={session ? session.avatarURL : null} />
             <Container className='px-5'>
                 <h2>{data['Question'][0]}</h2>
                 <h5 className='mb-5 text-muted'>Asked By: {data['Question'][1]}</h5>

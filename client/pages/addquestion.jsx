@@ -46,7 +46,7 @@ export default function Home() {
 
     return (
         <>
-            <Navbar avatar={session ? session.avatarURL : null} />
+            <Navbar session={session} avatar={session ? session.avatarURL : null} />
             <Container fluid id='questions' className='px-5 mb-5'>
                 <Form onSubmit={submitForm} method='POST'>
                     <Form.Group controlId='question'>
