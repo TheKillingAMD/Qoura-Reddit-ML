@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../utils/axios';
 import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { signIn } from 'next-auth/client';
@@ -33,7 +33,7 @@ export default function Home() {
             formData.append(key, values[key]);
         });
         await axios
-            .post('http://localhost:5000/register', formData)
+            .post('/papi/register', formData)
             .then(response => {
                 console.log(response.data);
                 const { result } = response.data;
@@ -41,7 +41,7 @@ export default function Home() {
                     signIn('credentials', {
                         email: values.email,
                         password: values.password,
-                        callbackUrl: 'localhost:3000',
+                        callbackUrl: '/',
                     });
                 }
                 setRegister(false);

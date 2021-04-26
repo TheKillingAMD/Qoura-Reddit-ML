@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../utils/axios';
 import { Container, Table, Image, Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
 import { useSession } from 'next-auth/client';
@@ -35,7 +35,7 @@ export default function Question({ data }) {
         };
         console.log(`${id} - ${answer} - ${headers}`);
         await axios
-            .post('http://localhost:5000/add_answer/' + id, answer, headers)
+            .post('/papi/add_answer/' + id, answer, headers)
             .then(response => {
                 console.log(response.data);
                 const { result } = response.data;
@@ -119,7 +119,7 @@ export default function Question({ data }) {
                                         />
                                     )}
                                 </td>
-                                <td className='align-middle'>
+                                <td className='align-middle col-10'>
                                     <div>
                                         <h6 className='text-muted'>{v[1][0]}</h6>
                                         <p className='m-0'>{v[2]}</p>
@@ -137,7 +137,7 @@ export default function Question({ data }) {
 export async function getServerSideProps({ params }) {
     const id = params.id;
     const data = await axios
-        .get('http://127.0.0.1:5000/question/' + id)
+        .get('/papi/question/' + id)
         .then(function (response) {
             let ans = response.data.Answer;
             console.log(ans.sort((a1, a2) => parseFloat(a2[0]) - parseFloat(a1[0])));

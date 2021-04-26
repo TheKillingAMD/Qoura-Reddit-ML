@@ -1,12 +1,12 @@
 import NextAuth from "next-auth";
 import Providers from 'next-auth/providers';
-import axios from 'axios';
+import axios from '../../../utils/axios';
 
 const providers = [
     Providers.Credentials({
         name: 'Credentials',
         authorize: async credentials => {
-            const user = await axios.post('http://localhost:5000/login',
+            const user = await axios.post('/papi/login',
                 {
                     email: credentials.email,
                     password: credentials.password

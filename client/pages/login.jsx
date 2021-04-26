@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 
@@ -25,7 +24,7 @@ export default function Home() {
         signIn('credentials', {
             email: values.email,
             password: values.password,
-            callbackUrl: 'localhost:3000'
+            callbackUrl: '/'
         });
         return 'SUCCESS';
     };
