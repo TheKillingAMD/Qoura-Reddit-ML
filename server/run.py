@@ -209,7 +209,7 @@ def add_answer(qid):
     if request.method == 'POST':
         question_id = qid
         user_id = get_jwt()['user']
-        answer = request.form.get('answer')
+        answer = request.json.get('answer')
 
         if db_answer.find_one({'user_id': user_id, 'question_id': qid}) != None:
             return {'Error': 'User Already Added Answer'}
