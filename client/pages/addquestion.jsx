@@ -47,21 +47,25 @@ export default function Home() {
     return (
         <>
             <Navbar session={session} />
-            <Container fluid id='questions' className='px-5 mb-5'>
-                <Form onSubmit={submitForm} method='POST'>
-                    <Form.Group controlId='question'>
-                        <Form.Label>Question</Form.Label>
-                        <Form.Control
-                            type='text'
-                            placeholder='Enter question'
-                            onChange={changeForm}
-                        />
-                    </Form.Group>
-                    <Button variant='primary' type='submit'>
-                        {adding ? <span>ADDING</span> : 'Submit'}
-                    </Button>
-                </Form>
-            </Container>
+            {session ? (
+                <Container fluid id='questions' className='px-5 mb-5'>
+                    <Form onSubmit={submitForm} method='POST'>
+                        <Form.Group controlId='question'>
+                            <Form.Label>Question</Form.Label>
+                            <Form.Control
+                                type='text'
+                                placeholder='Enter question'
+                                onChange={changeForm}
+                            />
+                        </Form.Group>
+                        <Button variant='primary' type='submit'>
+                            {adding ? <span>ADDING</span> : 'Submit'}
+                        </Button>
+                    </Form>
+                </Container>
+            ) : (
+                <h1 className='text-center'>YOU ARE NOT AUTHORIZED! BEGONE</h1>
+            )}
         </>
     );
 }
