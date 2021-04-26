@@ -266,6 +266,7 @@ def question(qid):
             question = [question["Question"], q_user['Username']]
             user_id = answer["user_id"]
             user = db_users.find_one({"_id": ObjectId(user_id)})
+            userAvatarURL = user["Profile Picture"]
             user = user["Username"]
             ans = answer["answer"]
             # answer = db_answer.find_one({"question_id": qid})
@@ -277,7 +278,7 @@ def question(qid):
             #                       })
             # else:
             # questions.append(question)
-            users.append(user)
+            users.append([user, userAvatarURL])
             ans_ml.append(ans)
         value = get_result(question[0], ans_ml)
         for score in value:

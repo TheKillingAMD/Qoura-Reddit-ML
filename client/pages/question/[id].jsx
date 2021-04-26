@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Container, Table } from 'react-bootstrap';
+import { Container, Table, Image } from 'react-bootstrap';
 import { useSession } from 'next-auth/client';
 
 import Navbar from '../../components/Navbar';
@@ -21,11 +21,12 @@ export default function Question({ data }) {
                         {data['Answer'].map((v, i) => (
                             <tr key={i} className='mb-3'>
                                 <td>
-                                    <Avatar text={v[1]} />
+                                    {/* <Avatar text={v[1][0]} /> */}
+                                    <Image className="mx-2" src={v[1][1]} roundedCircle width='40px' height='40px' />
                                 </td>
                                 <td className='align-middle'>
                                     <div>
-                                        <h6 className='text-muted'>{v[1]}</h6>
+                                        <h6 className='text-muted'>{v[1][0]}</h6>
                                         <p className='m-0'>{v[2]}</p>
                                     </div>
                                 </td>
