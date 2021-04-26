@@ -22,7 +22,7 @@ import random
 
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 app.config['SECRET_KEY'] = 'e6040f19d063c7ea55a33765df99277c'
 app.config["MONGO_URI"] = "mongodb+srv://Ayush:mongodb@cluster0.0ngc1.mongodb.net/Qoura-ML"
 app.config['JWT_ALGORITHM'] = 'HS512'

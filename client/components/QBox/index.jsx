@@ -8,8 +8,7 @@ export default function QBox({ question }) {
             <Card className={styles.card}>
                 <Card.Body>
                     <Card.Title>{question['Question']}</Card.Title>
-                    <Card.Subtitle className='mb-3 text-muted'>{question['User']}</Card.Subtitle>
-                    <Card.Text>Add Question Description here</Card.Text>
+                    <Card.Subtitle className='text-muted'>{question['User']}</Card.Subtitle>
                 </Card.Body>
             </Card>
         </a>

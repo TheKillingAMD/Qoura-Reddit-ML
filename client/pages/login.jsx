@@ -24,7 +24,10 @@ export default function Home() {
         signIn('credentials', {
             email: values.email,
             password: values.password,
-            callbackUrl: '/'
+            callbackUrl:
+                process.env.NODE_ENV === 'production'
+                    ? 'https://qr-ml.vercel.app'
+                    : 'http://localhost:3000',
         });
         return 'SUCCESS';
     };
