@@ -25,6 +25,7 @@ export default function Home() {
         signIn('credentials', {
             email: values.email,
             password: values.password,
+            callbackUrl: 'localhost:3000'
         });
         return 'SUCCESS';
     };
