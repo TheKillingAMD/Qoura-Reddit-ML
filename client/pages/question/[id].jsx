@@ -23,7 +23,12 @@ export default function Question({ data }) {
                                 <td>
                                     <Avatar text={v[1]} />
                                 </td>
-                                <td className='align-middle'>{v[2]}</td>
+                                <td className='align-middle'>
+                                    <div>
+                                        <h6 className='text-muted'>{v[1]}</h6>
+                                        <p className='m-0'>{v[2]}</p>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
